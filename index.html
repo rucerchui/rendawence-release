@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>问策纪年 · 人大问策开发年鉴</title>
+<script>document.documentElement.classList.add('anim')</script>
+<style>
+:root{
+  --bg:#15070b; --bg2:#1d0a10;
+  --card:rgba(255,235,238,.035);
+  --card-border:rgba(255,196,200,.09);
+  --hairline:rgba(255,196,200,.10);
+  --ink:#f7ecee; --ink-2:#e8d2d6; --ink-3:#b898a0; --ink-4:#8a5860;
+  --red:#e0483f; --red-deep:#a81e27; --gold:#f4b860; --jade:#7fc79a;
+  --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  overflow-x:hidden;
+  background:
+    radial-gradient(1100px 520px at 78% -8%, rgba(224,72,63,.16), transparent 62%),
+    radial-gradient(900px 480px at 8% 12%, rgba(244,184,96,.10), transparent 60%),
+    linear-gradient(180deg,var(--bg2),var(--bg) 42%,#100508 100%);
+  color:var(--ink-2);font-family:var(--sans);line-height:1.75;
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(224,72,63,.35)}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px 120px}
+
+/* ===== 页眉 ===== */
+.hero{padding:96px 0 40px;text-align:center;position:relative}
+.hero .kicker{
+  font-size:13px;letter-spacing:.55em;color:var(--gold);
+  text-indent:.55em;opacity:.85;margin-bottom:18px;
+}
+.hero h1{
+  font-family:var(--serif);font-weight:700;
+  font-size:clamp(44px,8vw,76px);line-height:1.15;letter-spacing:.12em;
+  background:linear-gradient(120deg,#ffe9d6 0%,#f4b860 38%,#e0483f 78%,#a81e27 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 60px rgba(224,72,63,.25);
+}
+.hero .sub{margin-top:16px;color:var(--ink-3);font-size:15px;letter-spacing:.12em}
+.hero .meta{margin-top:10px;color:var(--ink-4);font-size:12.5px}
+.hero-actions{margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-block;padding:13px 34px;border-radius:999px;font-size:14.5px;letter-spacing:.1em;color:#20100a;background:linear-gradient(135deg,#f7c97d,#e89a4e);font-weight:600;text-decoration:none;box-shadow:0 8px 28px rgba(244,184,96,.28),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .2s ease,box-shadow .2s ease}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(244,184,96,.4),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-ghost{display:inline-block;padding:13px 26px;border-radius:999px;font-size:14.5px;letter-spacing:.1em;color:var(--gold);text-decoration:none;border:1px solid rgba(244,184,96,.45);transition:background .2s ease,border-color .2s ease}
+.btn-ghost:hover{background:rgba(244,184,96,.1);border-color:rgba(244,184,96,.75)}
+
+/* ===== 总览统计 ===== */
+.stats{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  margin:44px 0 8px;
+}
+.stat-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;padding:18px 12px;text-align:center;
+  backdrop-filter:blur(12px);position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(244,184,96,.35),transparent);
+}
+.stat-card .num{
+  font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink);
+  line-height:1.2;
+}
+.stat-card .lbl{font-size:12px;color:var(--ink-3);margin-top:4px}
+
+/* ===== 阅读提示 ===== */
+.readhint{
+  margin:34px 0 8px;padding:16px 20px;border-radius:14px;
+  border:1px solid rgba(244,184,96,.18);
+  background:rgba(244,184,96,.05);
+  font-size:13.5px;color:var(--ink-3);
+}
+.readhint b{color:var(--gold);font-weight:600}
+
+/* ===== 筛选条 ===== */
+.toolbar{
+  position:sticky;top:12px;z-index:20;margin:26px 0 10px;
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:12px 14px;border-radius:16px;
+  background:rgba(22,9,13,.82);border:1px solid var(--card-border);
+  backdrop-filter:blur(16px);
+}
+.search{
+  flex:1;min-width:200px;background:rgba(0,0,0,.3);
+  border:1px solid var(--hairline);border-radius:10px;
+  padding:9px 14px;color:var(--ink);font-size:13.5px;outline:none;
+  font-family:var(--sans);
+}
+.search::placeholder{color:var(--ink-4)}
+.search:focus{border-color:rgba(224,72,63,.5);box-shadow:0 0 0 3px rgba(224,72,63,.12)}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{
+  border:1px solid var(--hairline);background:transparent;
+  color:var(--ink-3);font-size:12.5px;padding:6px 14px;border-radius:999px;
+  cursor:pointer;transition:all .25s ease;font-family:var(--sans);
+}
+.pill:hover{color:var(--ink);border-color:rgba(224,72,63,.4)}
+.pill.on{
+  background:linear-gradient(120deg,var(--red-deep),var(--red));
+  border-color:transparent;color:#fff;
+  box-shadow:0 4px 16px -6px rgba(224,72,63,.6);
+}
+
+/* ===== 时间轴 ===== */
+.timeline{position:relative;margin-top:36px;padding-left:34px}
+.timeline::before{
+  content:"";position:absolute;left:9px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,rgba(244,184,96,.5),rgba(224,72,63,.35) 40%,rgba(168,30,39,.15));
+  border-radius:2px;
+}
+.ms{position:relative;padding-bottom:26px}
+.ms-node{
+  position:absolute;left:-34px;top:30px;width:18px;height:18px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ff8a7a,var(--red) 55%,var(--red-deep));
+  box-shadow:0 0 0 4px rgba(224,72,63,.15),0 0 18px rgba(224,72,63,.5);
+}
+.ms-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:20px;padding:26px 28px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 18px 50px -28px rgba(0,0,0,.75);
+  position:relative;overflow:hidden;
+}
+.ms-card::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+}
+.ms-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ms-id{display:flex;align-items:center;gap:10px}
+.ms-tag{
+  font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);
+  letter-spacing:.04em;
+}
+.ms-badge{
+  font-size:11px;padding:3px 10px;border-radius:999px;
+  border:1px solid rgba(244,184,96,.35);color:var(--gold);
+  background:rgba(244,184,96,.08);
+}
+.ms-badge.beta{border-color:rgba(224,72,63,.4);color:#ff9a92;background:rgba(224,72,63,.1)}
+.ms-date{font-size:12.5px;color:var(--ink-4)}
+.ms-title{
+  font-family:var(--serif);font-size:23px;font-weight:700;color:var(--ink);
+  margin:12px 0 8px;letter-spacing:.03em;line-height:1.45;
+}
+.ms-summary{font-size:14px;color:var(--ink-3)}
+.ms-stats{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 14px}
+.stat{
+  font-size:12px;color:var(--ink-3);padding:5px 12px;border-radius:999px;
+  background:rgba(255,255,255,.04);border:1px solid var(--hairline);
+}
+.stat i{font-style:normal;margin-right:4px}
+.stat.plus{color:var(--jade)}
+.stat.minus{color:#d98a8a}
+.ms-mods{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{
+  display:inline-flex;align-items:baseline;gap:6px;
+  font-size:12px;padding:4px 12px;border-radius:10px;
+  background:rgba(224,72,63,.08);border:1px solid rgba(224,72,63,.18);
+  color:var(--ink-2);
+}
+.chip b{color:#ffb4ab;font-family:var(--serif);font-size:13.5px}
+.chip i{font-style:normal;color:var(--ink-4);font-size:11px}
+.chip em{font-style:normal;color:var(--ink-4);font-size:11px}
+.chip-mod{
+  background:rgba(244,184,96,.08);border-color:rgba(244,184,96,.2);
+  color:var(--gold);padding:2px 9px;font-size:11px;
+}
+
+/* ===== 提交条目 ===== */
+.ms-commits{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.commit details{
+  border:1px solid var(--hairline);border-radius:12px;
+  background:rgba(0,0,0,.18);transition:border-color .25s;
+}
+.commit details[open]{border-color:rgba(224,72,63,.3);background:rgba(0,0,0,.28)}
+.commit summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;row-gap:6px;
+  padding:11px 14px;font-size:13.5px;color:var(--ink-2);
+}
+.commit summary::-webkit-details-marker{display:none}
+.c-type{width:22px;text-align:center;flex-shrink:0;order:1}
+.c-title{flex:1;min-width:0;order:2}
+/* 模块标签多时整块换到标题下一行，保证标题永不被挤压 */
+.c-chips{display:flex;gap:5px;flex-wrap:wrap;order:4;flex-basis:100%}
+.c-meta{display:flex;gap:10px;align-items:center;flex-shrink:0;margin-left:auto;
+  order:3;font-size:11.5px;color:var(--ink-4)}
+.c-hash{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:rgba(255,255,255,.06);padding:1px 7px;border-radius:6px;
+}
+.checkpoints{
+  font-size:12px;color:var(--ink-4);padding:6px 14px 2px;
+  letter-spacing:.03em;opacity:.85;
+}
+.c-body{padding:0 16px 14px 46px}
+.c-plain{font-size:12.5px;color:var(--ink-3);margin-bottom:10px}
+.c-plain a{color:var(--gold);text-decoration:none}
+.c-plain a:hover{text-decoration:underline}
+.plus{color:var(--jade);font-style:normal}
+.minus{color:#d98a8a;font-style:normal}
+.filegroups{display:flex;flex-direction:column;gap:10px}
+.filegroup-h{font-size:11.5px;color:var(--gold);margin-bottom:4px;letter-spacing:.05em}
+.filegroup ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+.filegroup li{
+  display:flex;justify-content:space-between;gap:12px;
+  font-size:12px;color:var(--ink-4);
+  padding:3px 10px;border-radius:7px;background:rgba(255,255,255,.025);
+}
+.fname{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.fstat{flex-shrink:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+
+/* ===== CI 区块 ===== */
+.ci-section{margin-top:56px}
+.section-h{
+  font-family:var(--serif);font-size:24px;color:var(--ink);
+  text-align:center;margin-bottom:8px;letter-spacing:.1em;
+}
+.section-sub{text-align:center;font-size:13px;color:var(--ink-4);margin-bottom:24px}
+.ci-card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:18px;padding:24px 28px;backdrop-filter:blur(12px);
+}
+.ci-note{font-size:13px;color:var(--ink-3);margin-bottom:14px}
+.ci-steps{list-style:none;display:flex;flex-direction:column;gap:12px}
+.ci-steps li{display:flex;gap:14px;align-items:baseline;font-size:14px;color:var(--ink-2)}
+.ci-step{
+  font-family:var(--serif);color:var(--gold);font-size:18px;
+  width:28px;flex-shrink:0;text-align:center;
+}
+.ci-runs{display:flex;flex-direction:column;gap:8px}
+.ci-run{
+  display:flex;align-items:center;gap:14px;text-decoration:none;
+  padding:13px 18px;border-radius:13px;
+  background:var(--card);border:1px solid var(--card-border);
+  transition:border-color .25s,transform .25s;
+}
+.ci-run:hover{border-color:rgba(224,72,63,.4);transform:translateX(3px)}
+.ci-dot{font-size:16px;width:20px;text-align:center}
+.ci-run.ok .ci-dot{color:var(--jade)}
+.ci-run.fail .ci-dot{color:var(--red)}
+.ci-run.run .ci-dot{color:var(--gold)}
+.ci-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.ci-name{font-size:13.5px;color:var(--ink-2)}
+.ci-sub{font-size:11.5px;color:var(--ink-4)}
+.ci-state{font-size:12px;color:var(--ink-3);flex-shrink:0}
+.ci-run.ok .ci-state{color:var(--jade)}
+.ci-run.fail .ci-state{color:var(--red)}
+
+/* ===== 页脚 ===== */
+.footer{
+  margin-top:72px;text-align:center;font-size:12px;color:var(--ink-4);
+  border-top:1px solid var(--hairline);padding-top:28px;line-height:2;
+}
+.footer .seal{
+  font-family:var(--serif);color:var(--gold);font-size:15px;letter-spacing:.3em;
+}
+
+/* ===== 动效（克制；渐进增强：无 JS / 慢加载时内容默认全显） ===== */
+/* 只有 <html> 带上 anim 类（JS 尽早添加）才启用“先隐后现”，避免正文隐形 */
+html.anim .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,.61,.36,1)}
+html.anim .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  html.anim .reveal{opacity:1;transform:none;transition:none}
+  *{animation:none!important}
+}
+@media (max-width:680px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .timeline{padding-left:26px}
+  .ms-node{left:-26px;width:14px;height:14px}
+  .ms-card{padding:20px}
+  .c-chips{display:none}
+  .c-body{padding-left:16px}
+  /* 窄屏：搜索框独占一行，筛选 pill 整行换行，杜绝横向溢出 */
+  .toolbar{gap:8px;padding:10px}
+  .search{flex-basis:100%;min-width:0}
+  .pills{width:100%}
+  .c-meta{gap:6px}
+  .c-hash{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="kicker">人 大 问 策 · 开 发 年 鉴</div>
+    <h1>问策纪年</h1>
+    <div class="sub">以版本为章，以提交为节 —— 记录每一步真实生长</div>
+    <div class="meta">本页由脚本从 Git 历史与 GitHub Actions 自动生成 · 更新于 2026 年 09 月 02 日</div>
+    <div class="hero-actions"><a class="btn-primary" href="https://github.com/rucerchui/rendawence-release/releases" target="_blank" rel="noopener">📦 下载安装包</a><a class="btn-ghost" href="https://github.com/rucerchui/rendawence-release/releases/latest" target="_blank" rel="noopener">最新版本 ↗</a></div>
+  </header>
+
+  <div class="stats"><div class="stat-card reveal"><div class="num">76</div><div class="lbl">天开发跨度</div></div><div class="stat-card reveal"><div class="num">17</div><div class="lbl">次提交</div></div><div class="stat-card reveal"><div class="num">14</div><div class="lbl">个版本</div></div><div class="stat-card reveal"><div class="num">60,057</div><div class="lbl">行新增</div></div><div class="stat-card reveal"><div class="num">18</div><div class="lbl">个功能模块</div></div></div>
+
+  <div class="readhint reveal">
+    <b>怎么读这份年鉴：</b>每个金色时间节点是一个<b>正式版本</b>，卡片上用大白话写清「这一版做了什么」；
+    版本下的每条记录是一次具体提交，<b>点击可展开</b>查看涉及哪些功能模块。
+    代码文件名、增删行数等技术细节都收在折叠区，不影响阅读。
+  </div>
+
+  <div class="toolbar reveal">
+    <input id="q" class="search" type="search" placeholder="搜索版本、功能或模块，如「舆图」「修复」「典库」…">
+    <div class="pills">
+      <button class="pill on" data-type="all">全部</button>
+      <button class="pill" data-type="feat">✨ 新功能</button>
+      <button class="pill" data-type="fix">🐛 修复</button>
+      <button class="pill" data-type="docs">📝 文档</button>
+      <button class="pill" data-type="ci">🔧 流水线</button>
+    </div>
+  </div>
+
+  <main class="timeline">
+    <section class="ms" data-hay="下一版本进行中 本版共 2 次提交：新功能 1 项、文档更新 1 次，主要打磨「文档、流水线」。 unreleased 未发布 文档 流水线 其他">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">未发布</span>
+            <span class="ms-badge">未发布</span>
+          </div>
+          <div class="ms-date">2026 年 9 月 2 日</div>
+        </header>
+        <h3 class="ms-title">下一版本进行中</h3>
+        <p class="ms-summary">本版共 2 次提交：新功能 1 项、文档更新 1 次，主要打磨「文档、流水线」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>2 次提交</span>
+          <span class="stat"><i>📄</i>4 个文件</span>
+          <span class="stat plus">+2,417</span>
+          <span class="stat minus">−8</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>3</em></span><span class="chip"><b>流水线</b><i>自动构建与发布</i><em>1</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>1</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="docs" data-hay="[chronicle-bot] 自动更新问策纪年年鉴 [skip ci] docs(chronicle): [chronicle-bot] 自动更新问策纪年年鉴 [skip ci] 文档 ">
+      <details>
+        <summary>
+          <span class="c-type" title="文档">📝</span>
+          <span class="c-title">[chronicle-bot] 自动更新问策纪年年鉴 [skip ci]</span>
+          <span class="c-chips"><span class="chip chip-mod">文档</span></span>
+          <span class="c-meta">
+            <span class="c-hash">ce693d9</span>
+            <span class="c-date">2026-09-02</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：文档（手册、规划与日志）
+            ；变更 <b>1</b> 个文件，
+            <i class="plus">+167</i> /
+            <i class="minus">−8</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">文档 · 1 个文件</div><ul><li><span class="fname">docs/chronicle/index.html</span><span class="fstat"><i class="plus">+167</i> <i class="minus">−8</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article>
+    <article class="commit" data-type="feat" data-hay="问策纪年 · 可视化开发年鉴（生成器 + ci 自动更新 + 公开展示站发布） feat: 问策纪年 · 可视化开发年鉴（生成器 + ci 自动更新 + 公开展示站发布） 流水线 文档 其他 ">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">问策纪年 · 可视化开发年鉴（生成器 + CI 自动更新 + 公开展示站发布）</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">文档</span></span>
+          <span class="c-meta">
+            <span class="c-hash">87a5d5e</span>
+            <span class="c-date">2026-09-02</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、文档（手册、规划与日志）
+            ；变更 <b>4</b> 个文件，
+            <i class="plus">+2,250</i> /
+            <i class="minus">−0</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">文档 · 2 个文件</div><ul><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+16</i> <i class="minus">−0</i></span></li><li><span class="fname">docs/chronicle/index.html</span><span class="fstat"><i class="plus">+1032</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/chronicle.yml</span><span class="fstat"><i class="plus">+140</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 1 个文件</div><ul><li><span class="fname">scripts/gen_chronicle.py</span><span class="fstat"><i class="plus">+1062</i> <i class="minus">−0</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="专利申报 v1.0 正式版打包准备 本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档」。 v1.0.0 专利申报正式版 筑基 其他 文档 流水线">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v1.0.0</span>
+            <span class="ms-badge">专利申报正式版</span>
+          </div>
+          <div class="ms-date">2026 年 8 月 10 日</div>
+        </header>
+        <h3 class="ms-title">专利申报 V1.0 正式版打包准备</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>14 个文件</span>
+          <span class="stat plus">+35</span>
+          <span class="stat minus">−36</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>6</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>4</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>3</em></span><span class="chip"><b>流水线</b><i>自动构建与发布</i><em>1</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="专利申报 v1.0 正式版打包准备 feat: prepare v1.0 formal patent build 流水线 文档 筑基 其他 v1.0.0">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">专利申报 V1.0 正式版打包准备</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">筑基</span></span>
+          <span class="c-meta">
+            <span class="c-hash">d5a9a7d</span>
+            <span class="c-date">2026-08-10</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、文档（手册、规划与日志）、筑基（应用骨架、桌面基座与打包）
+            ；变更 <b>14</b> 个文件，
+            <i class="plus">+35</i> /
+            <i class="minus">−36</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 6 个文件</div><ul><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−7</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">build/icon.ico</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">build/icon.png</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 4 个文件</div><ul><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">public/logo-banner.png</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">public/logo.png</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−7</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 3 个文件</div><ul><li><span class="fname">&quot;docs/\344\275\277\347\224\250\346\211\213\345\206\214.md&quot;</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−7</i></span></li><li><span class="fname">LICENSE.md</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−4</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/build.yml</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="全面收口发布 本版共 1 次提交：新功能 1 项，主要打磨「筑基、观澜」。 v4.0.0 全面收口 筑基 其他 观澜 库址 文档 舆图 成章 速览 典库 索隐 观微">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v4.0.0</span>
+            <span class="ms-badge">全面收口</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 24 日</div>
+        </header>
+        <h3 class="ms-title">全面收口发布</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、观澜」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>29 个文件</span>
+          <span class="stat plus">+2,294</span>
+          <span class="stat minus">−156</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>9</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>3</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>3</em></span><span class="chip"><b>库址</b><i>系统设置与偏好</i><em>3</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>3</em></span><span class="chip"><b>舆图</b><i>地图脉络与政区下钻</i><em>2</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="全面收口发布 feat: v4.0.0 全面收口发布 筑基 其他 观澜 舆图 库址 速览 成章 典库 索隐 观微 文档 v4.0.0">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">全面收口发布</span>
+          <span class="c-chips"><span class="chip chip-mod">筑基</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">舆图</span><span class="chip chip-mod">库址</span><span class="chip chip-mod">速览</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">观微</span><span class="chip chip-mod">文档</span></span>
+          <span class="c-meta">
+            <span class="c-hash">9e7e14b</span>
+            <span class="c-date">2026-07-24</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：筑基（应用骨架、桌面基座与打包）、观澜（热点采集与来源管理）、舆图（地图脉络与政区下钻）、库址（系统设置与偏好）、速览（首页一屏总览）、成章（智能写稿与报告导出）、典库（本地知识库与资料沉淀）、索隐（全文检索与正文抽取）、观微（预警、舆情与简报）、文档（手册、规划与日志）
+            ；变更 <b>29</b> 个文件，
+            <i class="plus">+2,294</i> /
+            <i class="minus">−156</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 9 个文件</div><ul><li><span class="fname">.gitignore</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−1</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+10</i> <i class="minus">−13</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+139</i> <i class="minus">−47</i></span></li><li><span class="fname">src/lib/sidebar-nav.ts</span><span class="fstat"><i class="plus">+67</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/theme.ts</span><span class="fstat"><i class="plus">+67</i> <i class="minus">−9</i></span></li><li><span class="fname">src/store/app.ts</span><span class="fstat"><i class="plus">+46</i> <i class="minus">−1</i></span></li><li><span class="fname">src/styles/globals.css</span><span class="fstat"><i class="plus">+99</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 3 个文件</div><ul><li><span class="fname">backend/app/__init__.py</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/timeutil.py</span><span class="fstat"><i class="plus">+71</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+272</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 3 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+23</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+41</i> <i class="minus">−6</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+150</i> <i class="minus">−4</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 3 个文件</div><ul><li><span class="fname">backend/app/api/settings.py</span><span class="fstat"><i class="plus">+382</i> <i class="minus">−27</i></span></li><li><span class="fname">backend/app/prefs.py</span><span class="fstat"><i class="plus">+45</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+468</i> <i class="minus">−2</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 3 个文件</div><ul><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+23</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v4.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+65</i> <i class="minus">−8</i></span></li><li><span class="fname">&quot;docs/v4.1-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+222</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">舆图 · 2 个文件</div><ul><li><span class="fname">backend/app/api/region.py</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−6</i></span></li><li><span class="fname">src/pages/Yutu.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 2 个文件</div><ul><li><span class="fname">backend/app/services/export.py</span><span class="fstat"><i class="plus">+5</i> <i class="minus">−8</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">速览 · 1 个文件</div><ul><li><span class="fname">backend/app/services/dashboard.py</span><span class="fstat"><i class="plus">+5</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">典库 · 1 个文件</div><ul><li><span class="fname">backend/app/services/kb.py</span><span class="fstat"><i class="plus">+27</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 1 个文件</div><ul><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+25</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 1 个文件</div><ul><li><span class="fname">backend/app/services/sentiment.py</span><span class="fstat"><i class="plus">+26</i> <i class="minus">−4</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="检索取消条数上限 + 逐条质量分 本版共 1 次提交：新功能 1 项，主要打磨「筑基、成章、枢机」。 v3.9.5 舆图与智能化深耕 筑基 成章 枢机 校验 观澜 策府 典库 观微 库址 索隐 文档 释策 其他 献策 速览 舆图">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.9.5</span>
+            <span class="ms-badge">舆图与智能化深耕</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 23 日</div>
+        </header>
+        <h3 class="ms-title">检索取消条数上限 + 逐条质量分</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、成章、枢机」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>62 个文件</span>
+          <span class="stat plus">+4,856</span>
+          <span class="stat minus">−529</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>15</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>6</em></span><span class="chip"><b>枢机</b><i>任务编排与全局指挥</i><em>6</em></span><span class="chip"><b>校验</b><i>自动化测试</i><em>6</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>5</em></span><span class="chip"><b>策府</b><i>模板、技能与新手引导</i><em>5</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="检索取消条数上限 + 逐条质量分 feat: v3.9.5 检索取消条数上限 + 逐条质量分 观微 观澜 典库 库址 成章 筑基 索隐 枢机 其他 校验 文档 策府 献策 速览 释策 舆图 v3.9.5">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">检索取消条数上限 + 逐条质量分</span>
+          <span class="c-chips"><span class="chip chip-mod">观微</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">库址</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">枢机</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">策府</span><span class="chip chip-mod">献策</span><span class="chip chip-mod">速览</span><span class="chip chip-mod">释策</span><span class="chip chip-mod">舆图</span></span>
+          <span class="c-meta">
+            <span class="c-hash">cc88bbd</span>
+            <span class="c-date">2026-07-23</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：观微（预警、舆情与简报）、观澜（热点采集与来源管理）、典库（本地知识库与资料沉淀）、库址（系统设置与偏好）、成章（智能写稿与报告导出）、筑基（应用骨架、桌面基座与打包）、索隐（全文检索与正文抽取）、枢机（任务编排与全局指挥）、校验（自动化测试）、文档（手册、规划与日志）、策府（模板、技能与新手引导）、献策（决策建议生成）、速览（首页一屏总览）、释策（洞察解读与主题分析）、舆图（地图脉络与政区下钻）
+            ；变更 <b>62</b> 个文件，
+            <i class="plus">+4,856</i> /
+            <i class="minus">−529</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 15 个文件</div><ul><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+37</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+94</i> <i class="minus">−4</i></span></li><li><span class="fname">src/components/ConfirmDialog.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">src/components/DeepResearchModal.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−3</i></span></li><li><span class="fname">src/components/FavoriteButton.tsx</span><span class="fstat"><i class="plus">+72</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Markdown.tsx</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/Modal.tsx</span><span class="fstat"><i class="plus">+72</i> <i class="minus">−18</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/Skeleton.tsx</span><span class="fstat"><i class="plus">+98</i> <i class="minus">−1</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+55</i> <i class="minus">−1</i></span></li><li><span class="fname">src/store/app.ts</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−0</i></span></li><li><span class="fname">src/store/onboarding.ts</span><span class="fstat"><i class="plus">+116</i> <i class="minus">−0</i></span></li><li><span class="fname">src/styles/globals.css</span><span class="fstat"><i class="plus">+49</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 6 个文件</div><ul><li><span class="fname">backend/app/api/workbench.py</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+45</i> <i class="minus">−9</i></span></li><li><span class="fname">src/components/CitationPanel.tsx</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/ExportMenu.tsx</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+23</i> <i class="minus">−16</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+179</i> <i class="minus">−45</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">枢机 · 6 个文件</div><ul><li><span class="fname">backend/app/services/orchestrator.py</span><span class="fstat"><i class="plus">+5</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/CommandPalette.tsx</span><span class="fstat"><i class="plus">+240</i> <i class="minus">−105</i></span></li><li><span class="fname">src/components/OrchIndicator.tsx</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li><li><span class="fname">src/components/SelectionAsk.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">src/lib/commandPaletteUtils.test.ts</span><span class="fstat"><i class="plus">+36</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/commandPaletteUtils.ts</span><span class="fstat"><i class="plus">+77</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 6 个文件</div><ul><li><span class="fname">backend/tests/test_activity.py</span><span class="fstat"><i class="plus">+213</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_article_pool.py</span><span class="fstat"><i class="plus">+142</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_extract_content.py</span><span class="fstat"><i class="plus">+129</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_hotspot_article.py</span><span class="fstat"><i class="plus">+220</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_search.py</span><span class="fstat"><i class="plus">+184</i> <i class="minus">−2</i></span></li><li><span class="fname">src/store/onboarding.test.ts</span><span class="fstat"><i class="plus">+53</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 5 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+16</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+125</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/sources/__init__.py</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−6</i></span></li><li><span class="fname">src/components/RefreshIndicator.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+196</i> <i class="minus">−18</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">策府 · 5 个文件</div><ul><li><span class="fname">src/components/OnboardingTour.css</span><span class="fstat"><i class="plus">+387</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/OnboardingTour.test.tsx</span><span class="fstat"><i class="plus">+77</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/OnboardingTour.tsx</span><span class="fstat"><i class="plus">+438</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/ShortcutHelp.tsx</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−2</i></span></li><li><span class="fname">src/pages/Library.tsx</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−9</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">典库 · 4 个文件</div><ul><li><span class="fname">backend/app/api/kb.py</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/services/deep_research.py</span><span class="fstat"><i class="plus">+8</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/tests/test_deep_research_empty.py</span><span class="fstat"><i class="plus">+31</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/KnowledgeBase.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−14</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 3 个文件</div><ul><li><span class="fname">backend/app/api/activity.py</span><span class="fstat"><i class="plus">+70</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/activity.py</span><span class="fstat"><i class="plus">+214</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Alerts.tsx</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 2 个文件</div><ul><li><span class="fname">backend/app/api/settings.py</span><span class="fstat"><i class="plus">+68</i> <i class="minus">−13</i></span></li><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+43</i> <i class="minus">−21</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 2 个文件</div><ul><li><span class="fname">backend/app/services/extract.py</span><span class="fstat"><i class="plus">+295</i> <i class="minus">−41</i></span></li><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+377</i> <i class="minus">−137</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 2 个文件</div><ul><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+47</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v4.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+25</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">释策 · 2 个文件</div><ul><li><span class="fname">src/pages/Insights.tsx</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−6</i></span></li><li><span class="fname">src/pages/Interpret.tsx</span><span class="fstat"><i class="plus">+42</i> <i class="minus">−12</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 1 个文件</div><ul><li><span class="fname">backend/audit_article_sources.py</span><span class="fstat"><i class="plus">+56</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">献策 · 1 个文件</div><ul><li><span class="fname">src/pages/Advise.tsx</span><span class="fstat"><i class="plus">+17</i> <i class="minus">−4</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">速览 · 1 个文件</div><ul><li><span class="fname">src/pages/Dashboard.tsx</span><span class="fstat"><i class="plus">+109</i> <i class="minus">−12</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">舆图 · 1 个文件</div><ul><li><span class="fname">src/pages/Yutu.tsx</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="内容生产与洞察体验增强 本版共 1 次提交：新功能 1 项，主要打磨「成章、释策、筑基」。 v3.9.4 舆图与智能化深耕 成章 释策 筑基 文档 策府 观澜 校验 其他 典库 枢机 献策">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.9.4</span>
+            <span class="ms-badge">舆图与智能化深耕</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 22 日</div>
+        </header>
+        <h3 class="ms-title">内容生产与洞察体验增强</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「成章、释策、筑基」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>44 个文件</span>
+          <span class="stat plus">+4,279</span>
+          <span class="stat minus">−420</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>10</em></span><span class="chip"><b>释策</b><i>洞察解读与主题分析</i><em>8</em></span><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>8</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>5</em></span><span class="chip"><b>策府</b><i>模板、技能与新手引导</i><em>4</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>2</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="内容生产与洞察体验增强 feat: v3.9.4 内容生产与洞察体验增强 文档 观澜 释策 策府 成章 筑基 典库 校验 枢机 其他 献策 v3.9.4">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">内容生产与洞察体验增强</span>
+          <span class="c-chips"><span class="chip chip-mod">文档</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">释策</span><span class="chip chip-mod">策府</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">枢机</span><span class="chip chip-mod">献策</span></span>
+          <span class="c-meta">
+            <span class="c-hash">f5daac6</span>
+            <span class="c-date">2026-07-22</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：文档（手册、规划与日志）、观澜（热点采集与来源管理）、释策（洞察解读与主题分析）、策府（模板、技能与新手引导）、成章（智能写稿与报告导出）、筑基（应用骨架、桌面基座与打包）、典库（本地知识库与资料沉淀）、校验（自动化测试）、枢机（任务编排与全局指挥）、献策（决策建议生成）
+            ；变更 <b>44</b> 个文件，
+            <i class="plus">+4,279</i> /
+            <i class="minus">−420</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">成章 · 10 个文件</div><ul><li><span class="fname">backend/app/api/workbench.py</span><span class="fstat"><i class="plus">+16</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/export.py</span><span class="fstat"><i class="plus">+102</i> <i class="minus">−7</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+59</i> <i class="minus">−4</i></span></li><li><span class="fname">electron/export-utils.cjs</span><span class="fstat"><i class="plus">+45</i> <i class="minus">−0</i></span></li><li><span class="fname">electron/export-utils.test.ts</span><span class="fstat"><i class="plus">+46</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/ExportMenu.test.tsx</span><span class="fstat"><i class="plus">+40</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/ExportMenu.tsx</span><span class="fstat"><i class="plus">+96</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/export.test.ts</span><span class="fstat"><i class="plus">+79</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/export.ts</span><span class="fstat"><i class="plus">+172</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+99</i> <i class="minus">−90</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">释策 · 8 个文件</div><ul><li><span class="fname">backend/app/api/insights.py</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/services/fact_check.py</span><span class="fstat"><i class="plus">+159</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/insights.py</span><span class="fstat"><i class="plus">+134</i> <i class="minus">−5</i></span></li><li><span class="fname">backend/app/services/topics.py</span><span class="fstat"><i class="plus">+188</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_fact_check.py</span><span class="fstat"><i class="plus">+182</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_insight_compare_topics.py</span><span class="fstat"><i class="plus">+155</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Insights.tsx</span><span class="fstat"><i class="plus">+164</i> <i class="minus">−9</i></span></li><li><span class="fname">src/pages/Interpret.tsx</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−72</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">筑基 · 8 个文件</div><ul><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+60</i> <i class="minus">−2</i></span></li><li><span class="fname">electron/preload.cjs</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+5</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/Markdown.tsx</span><span class="fstat"><i class="plus">+82</i> <i class="minus">−24</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+152</i> <i class="minus">−19</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 5 个文件</div><ul><li><span class="fname">&quot;docs/\344\275\277\347\224\250\346\211\213\345\206\214.md&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">&quot;docs/\345\257\274\345\207\272\346\226\271\346\241\210\350\256\276\350\256\241.md&quot;</span><span class="fstat"><i class="plus">+26</i> <i class="minus">−9</i></span></li><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+40</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v4.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+21</i> <i class="minus">−7</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">策府 · 4 个文件</div><ul><li><span class="fname">backend/app/api/library.py</span><span class="fstat"><i class="plus">+64</i> <i class="minus">−6</i></span></li><li><span class="fname">backend/app/services/library.py</span><span class="fstat"><i class="plus">+229</i> <i class="minus">−14</i></span></li><li><span class="fname">backend/tests/test_library_templates.py</span><span class="fstat"><i class="plus">+83</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Library.tsx</span><span class="fstat"><i class="plus">+389</i> <i class="minus">−44</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 2 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+18</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+258</i> <i class="minus">−19</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 2 个文件</div><ul><li><span class="fname">backend/tests/test_export.py</span><span class="fstat"><i class="plus">+53</i> <i class="minus">−0</i></span></li><li><span class="fname">vitest.config.ts</span><span class="fstat"><i class="plus">+14</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 2 个文件</div><ul><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+968</i> <i class="minus">−10</i></span></li><li><span class="fname">src/types/electron.d.ts</span><span class="fstat"><i class="plus">+26</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">典库 · 1 个文件</div><ul><li><span class="fname">backend/app/services/deep_research.py</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">枢机 · 1 个文件</div><ul><li><span class="fname">backend/tests/test_orchestrator.py</span><span class="fstat"><i class="plus">+10</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">献策 · 1 个文件</div><ul><li><span class="fname">src/pages/Advise.tsx</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−72</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="热点来源与安装包稳定性收口 本版共 1 次提交：新功能 1 项，主要打磨「观澜、筑基、文档」。 v3.9.3 舆图与智能化深耕 观澜 筑基 文档 观微 舆图 速览 索隐 校验 流水线 智枢 其他 库址">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.9.3</span>
+            <span class="ms-badge">舆图与智能化深耕</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 21 日</div>
+        </header>
+        <h3 class="ms-title">热点来源与安装包稳定性收口</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「观澜、筑基、文档」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>30 个文件</span>
+          <span class="stat plus">+2,326</span>
+          <span class="stat minus">−125</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>6</em></span><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>5</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>4</em></span><span class="chip"><b>观微</b><i>预警、舆情与简报</i><em>3</em></span><span class="chip"><b>舆图</b><i>地图脉络与政区下钻</i><em>2</em></span><span class="chip"><b>速览</b><i>首页一屏总览</i><em>2</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="热点来源与安装包稳定性收口 feat: v3.9.3 热点来源与安装包稳定性收口 流水线 观微 观澜 舆图 筑基 智枢 速览 索隐 校验 文档 其他 库址 v3.9.3">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">热点来源与安装包稳定性收口</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">观微</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">舆图</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">智枢</span><span class="chip chip-mod">速览</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">库址</span></span>
+          <span class="c-meta">
+            <span class="c-hash">1f1290a</span>
+            <span class="c-date">2026-07-21</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、观微（预警、舆情与简报）、观澜（热点采集与来源管理）、舆图（地图脉络与政区下钻）、筑基（应用骨架、桌面基座与打包）、智枢（大模型接入与密钥）、速览（首页一屏总览）、索隐（全文检索与正文抽取）、校验（自动化测试）、文档（手册、规划与日志）、库址（系统设置与偏好）
+            ；变更 <b>30</b> 个文件，
+            <i class="plus">+2,326</i> /
+            <i class="minus">−125</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">观澜 · 6 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+21</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/services/gov_docs.py</span><span class="fstat"><i class="plus">+325</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+261</i> <i class="minus">−33</i></span></li><li><span class="fname">backend/app/services/sources/__init__.py</span><span class="fstat"><i class="plus">+30</i> <i class="minus">−6</i></span></li><li><span class="fname">src/components/RefreshIndicator.tsx</span><span class="fstat"><i class="plus">+23</i> <i class="minus">−2</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+10</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">筑基 · 5 个文件</div><ul><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+15</i> <i class="minus">−0</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−1</i></span></li><li><span class="fname">insight-backend.spec</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+95</i> <i class="minus">−4</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 4 个文件</div><ul><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+157</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/\346\224\277\345\272\234\345\205\254\346\226\207-\345\210\206\351\242\206\345\237\237\346\224\266\351\233\206\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+148</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/\347\203\255\347\202\271\346\216\250\350\215\220\346\272\220-\345\233\276\347\211\207\346\240\270\346\237\245\346\212\245\345\221\212.md&quot;</span><span class="fstat"><i class="plus">+69</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v4.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+28</i> <i class="minus">−7</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 3 个文件</div><ul><li><span class="fname">backend/app/api/alerts.py</span><span class="fstat"><i class="plus">+17</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/alerts.py</span><span class="fstat"><i class="plus">+59</i> <i class="minus">−18</i></span></li><li><span class="fname">src/pages/Alerts.tsx</span><span class="fstat"><i class="plus">+47</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">舆图 · 2 个文件</div><ul><li><span class="fname">backend/app/api/region.py</span><span class="fstat"><i class="plus">+116</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Yutu.tsx</span><span class="fstat"><i class="plus">+258</i> <i class="minus">−8</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">速览 · 2 个文件</div><ul><li><span class="fname">backend/app/services/dashboard.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Dashboard.tsx</span><span class="fstat"><i class="plus">+18</i> <i class="minus">−9</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 2 个文件</div><ul><li><span class="fname">backend/app/services/extract.py</span><span class="fstat"><i class="plus">+90</i> <i class="minus">−15</i></span></li><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+119</i> <i class="minus">−4</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 2 个文件</div><ul><li><span class="fname">backend/tests/test_hotspot_image.py</span><span class="fstat"><i class="plus">+221</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_hotspot_sources.py</span><span class="fstat"><i class="plus">+57</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/build.yml</span><span class="fstat"><i class="plus">+38</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">智枢 · 1 个文件</div><ul><li><span class="fname">backend/app/providers.py</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 1 个文件</div><ul><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 1 个文件</div><ul><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+90</i> <i class="minus">−4</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="舆图三模式与地球多级下钻 本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档」。 v3.9.2 舆图与智能化深耕 筑基 文档 其他 流水线 舆图">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.9.2</span>
+            <span class="ms-badge">舆图与智能化深耕</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 18 日</div>
+        </header>
+        <h3 class="ms-title">舆图三模式与地球多级下钻</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>15 个文件</span>
+          <span class="stat plus">+893</span>
+          <span class="stat minus">−123</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>7</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>4</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>2</em></span><span class="chip"><b>流水线</b><i>自动构建与发布</i><em>1</em></span><span class="chip"><b>舆图</b><i>地图脉络与政区下钻</i><em>1</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="舆图三模式与地球多级下钻 feat: v3.9.2 舆图三模式与地球多级下钻 其他 流水线 筑基 文档 舆图 v3.9.2">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">舆图三模式与地球多级下钻</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">舆图</span></span>
+          <span class="c-meta">
+            <span class="c-hash">b4ad92b</span>
+            <span class="c-date">2026-07-18</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、筑基（应用骨架、桌面基座与打包）、文档（手册、规划与日志）、舆图（地图脉络与政区下钻）
+            ；变更 <b>15</b> 个文件，
+            <i class="plus">+893</i> /
+            <i class="minus">−123</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 7 个文件</div><ul><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">.gitignore</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−4</i></span></li><li><span class="fname">insight-backend.spec</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−5</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−1</i></span></li><li><span class="fname">vite.config.ts</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 4 个文件</div><ul><li><span class="fname">&quot;docs/\344\275\277\347\224\250\346\211\213\345\206\214.md&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+40</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v4.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+8</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 2 个文件</div><ul><li><span class="fname">.env.example</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−0</i></span></li><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+326</i> <i class="minus">−91</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/build.yml</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">舆图 · 1 个文件</div><ul><li><span class="fname">src/pages/Yutu.tsx</span><span class="fstat"><i class="plus">+478</i> <i class="minus">−17</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="舆图·maplibre 地图下钻 + 枢机编排/简报/洞察等模块 本版共 1 次提交：新功能 1 项，主要打磨「舆图、筑基、枢机」。 v3.9.0 舆图与智能化深耕 舆图 筑基 枢机 成章 文档 观微 释策 观澜 典库 献策 速览 索隐 校验 其他 智枢 策府 库址">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.9.0</span>
+            <span class="ms-badge">舆图与智能化深耕</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 18 日</div>
+        </header>
+        <h3 class="ms-title">舆图·MapLibre 地图下钻 + 枢机编排/简报/洞察等模块</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「舆图、筑基、枢机」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>428 个文件</span>
+          <span class="stat plus">+11,394</span>
+          <span class="stat minus">−534</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>舆图</b><i>地图脉络与政区下钻</i><em>365</em></span><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>15</em></span><span class="chip"><b>枢机</b><i>任务编排与全局指挥</i><em>7</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>6</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>5</em></span><span class="chip"><b>观微</b><i>预警、舆情与简报</i><em>5</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="舆图·maplibre 地图下钻 + 枢机编排/简报/洞察等模块 feat: v3.9.0 舆图·maplibre 地图下钻 + 枢机编排/简报/洞察等模块 文档 观微 观澜 释策 典库 枢机 舆图 成章 筑基 献策 速览 索隐 智枢 校验 其他 策府 库址 v3.9.0">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">舆图·MapLibre 地图下钻 + 枢机编排/简报/洞察等模块</span>
+          <span class="c-chips"><span class="chip chip-mod">文档</span><span class="chip chip-mod">观微</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">释策</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">枢机</span><span class="chip chip-mod">舆图</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">献策</span><span class="chip chip-mod">速览</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">智枢</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">策府</span><span class="chip chip-mod">库址</span></span>
+          <span class="c-meta">
+            <span class="c-hash">dbe73e4</span>
+            <span class="c-date">2026-07-18</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：文档（手册、规划与日志）、观微（预警、舆情与简报）、观澜（热点采集与来源管理）、释策（洞察解读与主题分析）、典库（本地知识库与资料沉淀）、枢机（任务编排与全局指挥）、舆图（地图脉络与政区下钻）、成章（智能写稿与报告导出）、筑基（应用骨架、桌面基座与打包）、献策（决策建议生成）、速览（首页一屏总览）、索隐（全文检索与正文抽取）、智枢（大模型接入与密钥）、校验（自动化测试）、策府（模板、技能与新手引导）、库址（系统设置与偏好）
+            ；变更 <b>428</b> 个文件，
+            <i class="plus">+11,394</i> /
+            <i class="minus">−534</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">舆图 · 365 个文件</div><ul><li><span class="fname">backend/app/api/region.py</span><span class="fstat"><i class="plus">+343</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/110000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/120000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/130900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/131000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/131100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/140900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/141000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/141100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/150900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/152200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/152500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/152900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/210900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/211000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/211100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/211200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/211300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/211400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/220800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/222400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/230900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/231000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/231100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/231200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/232700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/310000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/320900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/321000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/321100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/321200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/321300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/330900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/331000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/331100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/340800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/341800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/350900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/360900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/361000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/361100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/370900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/371700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/410900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/411700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/420900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/421000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/421100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/421200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/421300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/422800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/430900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/431000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/431100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/431200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/431300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/433100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/440900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/441800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/445100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/445200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/445300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/450900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/451000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/451100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/451200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/451300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/451400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/460000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/460100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/460200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/460300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/500000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/510900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/511900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/512000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/513200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/513300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/513400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/520600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/522300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/522600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/522700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/530900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/532300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/532500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/532600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/532800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/532900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/533100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/533300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/533400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/540600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/542500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/610900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/611000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/620900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/621000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/621100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/621200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/622900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/623000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/630000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/630100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/630200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/632200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/632300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/632500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/632600_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/632700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/632800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/640000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/640100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/640200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/640300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/640400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/640500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/650000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/650100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/650200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/650400_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/650500_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/652300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/652700_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/652800_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/652900_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/653000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/653100_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/653200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/654000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/654200_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/654300_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/810000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/820000_full.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/assets/geo/china.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Yutu.tsx</span><span class="fstat"><i class="plus">+963</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">筑基 · 15 个文件</div><ul><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+44</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/requirements.txt</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+17</i> <i class="minus">−4</i></span></li><li><span class="fname">insight-backend.spec</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−0</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+58</i> <i class="minus">−13</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+105</i> <i class="minus">−17</i></span></li><li><span class="fname">src/components/DeepResearchModal.tsx</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−2</i></span></li><li><span class="fname">src/components/Markdown.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−8</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+405</i> <i class="minus">−7</i></span></li><li><span class="fname">src/lib/theme.ts</span><span class="fstat"><i class="plus">+68</i> <i class="minus">−6</i></span></li><li><span class="fname">src/store/app.ts</span><span class="fstat"><i class="plus">+262</i> <i class="minus">−6</i></span></li><li><span class="fname">src/styles/globals.css</span><span class="fstat"><i class="plus">+98</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">枢机 · 7 个文件</div><ul><li><span class="fname">backend/app/api/orchestrator.py</span><span class="fstat"><i class="plus">+60</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/omni.py</span><span class="fstat"><i class="plus">+16</i> <i class="minus">−13</i></span></li><li><span class="fname">backend/app/services/orchestrator.py</span><span class="fstat"><i class="plus">+376</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_orchestrator.py</span><span class="fstat"><i class="plus">+224</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/CommandPalette.tsx</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−9</i></span></li><li><span class="fname">src/components/OrchIndicator.tsx</span><span class="fstat"><i class="plus">+196</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/CeHeng.tsx</span><span class="fstat"><i class="plus">+51</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 6 个文件</div><ul><li><span class="fname">backend/app/api/workbench.py</span><span class="fstat"><i class="plus">+89</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/services/report_chat.py</span><span class="fstat"><i class="plus">+12</i> <i class="minus">−3</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+268</i> <i class="minus">−6</i></span></li><li><span class="fname">src/components/CitationPanel.tsx</span><span class="fstat"><i class="plus">+33</i> <i class="minus">−3</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+395</i> <i class="minus">−7</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+611</i> <i class="minus">−77</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 5 个文件</div><ul><li><span class="fname">&quot;docs/\344\275\277\347\224\250\346\211\213\345\206\214.md&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+177</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v3.5-\345\234\260\345\233\276\344\270\213\351\222\273\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+405</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v4.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+240</i> <i class="minus">−0</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 5 个文件</div><ul><li><span class="fname">backend/app/api/briefings.py</span><span class="fstat"><i class="plus">+52</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/briefings.py</span><span class="fstat"><i class="plus">+268</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_briefings.py</span><span class="fstat"><i class="plus">+100</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Alerts.tsx</span><span class="fstat"><i class="plus">+121</i> <i class="minus">−7</i></span></li><li><span class="fname">src/pages/GuanWei.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">释策 · 5 个文件</div><ul><li><span class="fname">backend/app/api/insights.py</span><span class="fstat"><i class="plus">+42</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/insights.py</span><span class="fstat"><i class="plus">+220</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/interpret.py</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Insights.tsx</span><span class="fstat"><i class="plus">+637</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Interpret.tsx</span><span class="fstat"><i class="plus">+243</i> <i class="minus">−53</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 4 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+28</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+55</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/sources/__init__.py</span><span class="fstat"><i class="plus">+43</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+150</i> <i class="minus">−14</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">典库 · 3 个文件</div><ul><li><span class="fname">backend/app/api/kb.py</span><span class="fstat"><i class="plus">+89</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/kb.py</span><span class="fstat"><i class="plus">+326</i> <i class="minus">−23</i></span></li><li><span class="fname">src/pages/KnowledgeBase.tsx</span><span class="fstat"><i class="plus">+519</i> <i class="minus">−76</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">献策 · 2 个文件</div><ul><li><span class="fname">backend/app/services/advise.py</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Advise.tsx</span><span class="fstat"><i class="plus">+151</i> <i class="minus">−43</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">速览 · 2 个文件</div><ul><li><span class="fname">backend/app/services/dashboard.py</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Dashboard.tsx</span><span class="fstat"><i class="plus">+1167</i> <i class="minus">−82</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 2 个文件</div><ul><li><span class="fname">backend/app/services/extract.py</span><span class="fstat"><i class="plus">+186</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+83</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 2 个文件</div><ul><li><span class="fname">backend/tests/test_hotspot_image.py</span><span class="fstat"><i class="plus">+157</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_search.py</span><span class="fstat"><i class="plus">+50</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 2 个文件</div><ul><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+392</i> <i class="minus">−6</i></span></li><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+71</i> <i class="minus">−5</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">智枢 · 1 个文件</div><ul><li><span class="fname">backend/app/services/llm.py</span><span class="fstat"><i class="plus">+92</i> <i class="minus">−8</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">策府 · 1 个文件</div><ul><li><span class="fname">src/components/ShortcutHelp.tsx</span><span class="fstat"><i class="plus">+77</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 1 个文件</div><ul><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+119</i> <i class="minus">−13</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="公测版体验优化（logo/速览美化 + 搜索卡顿 + chips 布局 + 献策去重） 本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档、流水线」。 v3.1.0-beta 公测打磨 筑基 文档 流水线 速览 成章">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.1.0-beta</span>
+            <span class="ms-badge beta">公测版</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 14 日</div>
+        </header>
+        <h3 class="ms-title">公测版体验优化（Logo/速览美化 + 搜索卡顿 + chips 布局 + 献策去重）</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档、流水线」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>11 个文件</span>
+          <span class="stat plus">+117</span>
+          <span class="stat minus">−80</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>5</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>3</em></span><span class="chip"><b>流水线</b><i>自动构建与发布</i><em>1</em></span><span class="chip"><b>速览</b><i>首页一屏总览</i><em>1</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>1</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="公测版体验优化（logo/速览美化 + 搜索卡顿 + chips 布局 + 献策去重） feat: v3.1.0-beta 公测版体验优化（logo/速览美化 + 搜索卡顿 + chips 布局 + 献策去重） 流水线 文档 筑基 速览 成章 v3.1.0-beta">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">公测版体验优化（Logo/速览美化 + 搜索卡顿 + chips 布局 + 献策去重）</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">速览</span><span class="chip chip-mod">成章</span></span>
+          <span class="c-meta">
+            <span class="c-hash">9a1a137</span>
+            <span class="c-date">2026-07-14</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、文档（手册、规划与日志）、筑基（应用骨架、桌面基座与打包）、速览（首页一屏总览）、成章（智能写稿与报告导出）
+            ；变更 <b>11</b> 个文件，
+            <i class="plus">+117</i> /
+            <i class="minus">−80</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 5 个文件</div><ul><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li><li><span class="fname">src/styles/globals.css</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 3 个文件</div><ul><li><span class="fname">&quot;docs/\344\275\277\347\224\250\346\211\213\345\206\214.md&quot;</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−0</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/build.yml</span><span class="fstat"><i class="plus">+12</i> <i class="minus">−9</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">速览 · 1 个文件</div><ul><li><span class="fname">src/pages/Dashboard.tsx</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−17</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 1 个文件</div><ul><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+62</i> <i class="minus">−43</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="公开测试版（旗舰四项 + 版权声明 + 使用手册 + 自动发版） 本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档、枢机」。 v3.0.0-beta 公开测试 筑基 文档 枢机 成章 库址 其他 速览 校验 流水线 索隐">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v3.0.0-beta</span>
+            <span class="ms-badge beta">公测版</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 14 日</div>
+        </header>
+        <h3 class="ms-title">公开测试版（旗舰四项 + 版权声明 + 使用手册 + 自动发版）</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、文档、枢机」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>29 个文件</span>
+          <span class="stat plus">+1,906</span>
+          <span class="stat minus">−109</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>6</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>5</em></span><span class="chip"><b>枢机</b><i>任务编排与全局指挥</i><em>4</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>4</em></span><span class="chip"><b>库址</b><i>系统设置与偏好</i><em>2</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>2</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="公开测试版（旗舰四项 + 版权声明 + 使用手册 + 自动发版） feat: v3.0.0-beta 公开测试版（旗舰四项 + 版权声明 + 使用手册 + 自动发版） 流水线 文档 枢机 库址 成章 筑基 其他 速览 索隐 校验 v3.0.0-beta">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">公开测试版（旗舰四项 + 版权声明 + 使用手册 + 自动发版）</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">枢机</span><span class="chip chip-mod">库址</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">速览</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">校验</span></span>
+          <span class="c-meta">
+            <span class="c-hash">d81fb80</span>
+            <span class="c-date">2026-07-14</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、文档（手册、规划与日志）、枢机（任务编排与全局指挥）、库址（系统设置与偏好）、成章（智能写稿与报告导出）、筑基（应用骨架、桌面基座与打包）、速览（首页一屏总览）、索隐（全文检索与正文抽取）、校验（自动化测试）
+            ；变更 <b>29</b> 个文件，
+            <i class="plus">+1,906</i> /
+            <i class="minus">−109</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 6 个文件</div><ul><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+40</i> <i class="minus">−8</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−1</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+27</i> <i class="minus">−3</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+16</i> <i class="minus">−2</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+49</i> <i class="minus">−2</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 5 个文件</div><ul><li><span class="fname">&quot;docs/\344\275\277\347\224\250\346\211\213\345\206\214.md&quot;</span><span class="fstat"><i class="plus">+95</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+30</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v3.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−5</i></span></li><li><span class="fname">LICENSE.md</span><span class="fstat"><i class="plus">+31</i> <i class="minus">−0</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+12</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">枢机 · 4 个文件</div><ul><li><span class="fname">backend/app/api/omni.py</span><span class="fstat"><i class="plus">+20</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/omni.py</span><span class="fstat"><i class="plus">+92</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/CommandPalette.tsx</span><span class="fstat"><i class="plus">+186</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/SelectionAsk.tsx</span><span class="fstat"><i class="plus">+133</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 4 个文件</div><ul><li><span class="fname">backend/app/api/workbench.py</span><span class="fstat"><i class="plus">+23</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+54</i> <i class="minus">−6</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+8</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+150</i> <i class="minus">−29</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 2 个文件</div><ul><li><span class="fname">backend/app/api/settings.py</span><span class="fstat"><i class="plus">+27</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+76</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 2 个文件</div><ul><li><span class="fname">backend/app/services/backup.py</span><span class="fstat"><i class="plus">+115</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">速览 · 2 个文件</div><ul><li><span class="fname">backend/app/services/dashboard.py</span><span class="fstat"><i class="plus">+111</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Dashboard.tsx</span><span class="fstat"><i class="plus">+222</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 2 个文件</div><ul><li><span class="fname">backend/tests/test_backup.py</span><span class="fstat"><i class="plus">+111</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_search.py</span><span class="fstat"><i class="plus">+102</i> <i class="minus">−33</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/build.yml</span><span class="fstat"><i class="plus">+37</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 1 个文件</div><ul><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+114</i> <i class="minus">−10</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="稳健性与体验加固（p0/p1/p2 三批修复） 本版共 1 次提交：问题修复 1 处，主要打磨「筑基、成章、文档」。 v2.9.0 稳健加固 筑基 成章 文档 观微 观澜 典库 策府 索隐 校验 其他 献策 释策 库址">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v2.9.0</span>
+            <span class="ms-badge">稳健加固</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 13 日</div>
+        </header>
+        <h3 class="ms-title">稳健性与体验加固（P0/P1/P2 三批修复）</h3>
+        <p class="ms-summary">本版共 1 次提交：问题修复 1 处，主要打磨「筑基、成章、文档」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>37 个文件</span>
+          <span class="stat plus">+1,186</span>
+          <span class="stat minus">−194</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>14</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>5</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>3</em></span><span class="chip"><b>观微</b><i>预警、舆情与简报</i><em>3</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>2</em></span><span class="chip"><b>典库</b><i>本地知识库与资料沉淀</i><em>2</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="fix" data-hay="稳健性与体验加固（p0/p1/p2 三批修复） fix: v2.9.0 稳健性与体验加固（p0/p1/p2 三批修复） 文档 筑基 观微 观澜 典库 策府 成章 索隐 校验 其他 献策 释策 库址 v2.9.0">
+      <details>
+        <summary>
+          <span class="c-type" title="修复">🐛</span>
+          <span class="c-title">稳健性与体验加固（P0/P1/P2 三批修复）</span>
+          <span class="c-chips"><span class="chip chip-mod">文档</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">观微</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">策府</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">献策</span><span class="chip chip-mod">释策</span><span class="chip chip-mod">库址</span></span>
+          <span class="c-meta">
+            <span class="c-hash">0973bf1</span>
+            <span class="c-date">2026-07-13</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：文档（手册、规划与日志）、筑基（应用骨架、桌面基座与打包）、观微（预警、舆情与简报）、观澜（热点采集与来源管理）、典库（本地知识库与资料沉淀）、策府（模板、技能与新手引导）、成章（智能写稿与报告导出）、索隐（全文检索与正文抽取）、校验（自动化测试）、献策（决策建议生成）、释策（洞察解读与主题分析）、库址（系统设置与偏好）
+            ；变更 <b>37</b> 个文件，
+            <i class="plus">+1,186</i> /
+            <i class="minus">−194</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 14 个文件</div><ul><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+5</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+64</i> <i class="minus">−2</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+41</i> <i class="minus">−31</i></span></li><li><span class="fname">src/components/ConfirmDialog.tsx</span><span class="fstat"><i class="plus">+70</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/DeepResearchModal.tsx</span><span class="fstat"><i class="plus">+15</i> <i class="minus">−13</i></span></li><li><span class="fname">src/components/ErrorBoundary.tsx</span><span class="fstat"><i class="plus">+69</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Modal.tsx</span><span class="fstat"><i class="plus">+123</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−1</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+31</i> <i class="minus">−4</i></span></li><li><span class="fname">src/main.tsx</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−1</i></span></li><li><span class="fname">src/store/app.ts</span><span class="fstat"><i class="plus">+50</i> <i class="minus">−7</i></span></li><li><span class="fname">vite.config.ts</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 5 个文件</div><ul><li><span class="fname">backend/app/services/report_chat.py</span><span class="fstat"><i class="plus">+12</i> <i class="minus">−2</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/ReportChat.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+20</i> <i class="minus">−2</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+25</i> <i class="minus">−5</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 3 个文件</div><ul><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+20</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v3.0-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+178</i> <i class="minus">−0</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 3 个文件</div><ul><li><span class="fname">backend/app/services/alerts.py</span><span class="fstat"><i class="plus">+29</i> <i class="minus">−15</i></span></li><li><span class="fname">src/pages/Alerts.tsx</span><span class="fstat"><i class="plus">+21</i> <i class="minus">−7</i></span></li><li><span class="fname">src/pages/Sentiment.tsx</span><span class="fstat"><i class="plus">+17</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 2 个文件</div><ul><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+29</i> <i class="minus">−7</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+41</i> <i class="minus">−12</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">典库 · 2 个文件</div><ul><li><span class="fname">backend/app/services/kb.py</span><span class="fstat"><i class="plus">+44</i> <i class="minus">−10</i></span></li><li><span class="fname">src/pages/KnowledgeBase.tsx</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−14</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">策府 · 2 个文件</div><ul><li><span class="fname">backend/app/services/library.py</span><span class="fstat"><i class="plus">+32</i> <i class="minus">−1</i></span></li><li><span class="fname">src/pages/Library.tsx</span><span class="fstat"><i class="plus">+44</i> <i class="minus">−18</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 1 个文件</div><ul><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+8</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 1 个文件</div><ul><li><span class="fname">backend/tests/test_security.py</span><span class="fstat"><i class="plus">+75</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 1 个文件</div><ul><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">献策 · 1 个文件</div><ul><li><span class="fname">src/pages/Advise.tsx</span><span class="fstat"><i class="plus">+11</i> <i class="minus">−4</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">释策 · 1 个文件</div><ul><li><span class="fname">src/pages/Interpret.tsx</span><span class="fstat"><i class="plus">+29</i> <i class="minus">−15</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 1 个文件</div><ul><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+25</i> <i class="minus">−6</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="稳定版（热点开机自动刷新 + 典库分类夹完整管理 + 释策/献策/观微模块 + 种子示例） 本版共 1 次提交：新功能 1 项，主要打磨「典库、筑基、文档」。 v2.6.0 能力扩展 典库 筑基 文档 献策 释策 观澜 观微 智枢 校验 其他">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v2.6.0</span>
+            <span class="ms-badge">能力扩展</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 10 日</div>
+        </header>
+        <h3 class="ms-title">稳定版（热点开机自动刷新 + 典库分类夹完整管理 + 释策/献策/观微模块 + 种子示例）</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「典库、筑基、文档」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>45 个文件</span>
+          <span class="stat plus">+7,224</span>
+          <span class="stat minus">−108</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>典库</b><i>本地知识库与资料沉淀</i><em>23</em></span><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>6</em></span><span class="chip"><b>文档</b><i>手册、规划与日志</i><em>3</em></span><span class="chip"><b>献策</b><i>决策建议生成</i><em>3</em></span><span class="chip"><b>释策</b><i>洞察解读与主题分析</i><em>3</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>2</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="稳定版（热点开机自动刷新 + 典库分类夹完整管理 + 释策/献策/观微模块 + 种子示例） feat: v2.6.0 稳定版（热点开机自动刷新 + 典库分类夹完整管理 + 释策/献策/观微模块 + 种子示例） 文档 献策 释策 典库 筑基 观澜 智枢 校验 其他 观微 v2.6.0">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">稳定版（热点开机自动刷新 + 典库分类夹完整管理 + 释策/献策/观微模块 + 种子示例）</span>
+          <span class="c-chips"><span class="chip chip-mod">文档</span><span class="chip chip-mod">献策</span><span class="chip chip-mod">释策</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">智枢</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">观微</span></span>
+          <span class="c-meta">
+            <span class="c-hash">c846ccb</span>
+            <span class="c-date">2026-07-10</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：文档（手册、规划与日志）、献策（决策建议生成）、释策（洞察解读与主题分析）、典库（本地知识库与资料沉淀）、筑基（应用骨架、桌面基座与打包）、观澜（热点采集与来源管理）、智枢（大模型接入与密钥）、校验（自动化测试）、观微（预警、舆情与简报）
+            ；变更 <b>45</b> 个文件，
+            <i class="plus">+7,224</i> /
+            <i class="minus">−108</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">典库 · 23 个文件</div><ul><li><span class="fname">backend/app/api/kb.py</span><span class="fstat"><i class="plus">+61</i> <i class="minus">−5</i></span></li><li><span class="fname">backend/app/seed/__init__.py</span><span class="fstat"><i class="plus">+299</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/14th_aging.txt</span><span class="fstat"><i class="plus">+299</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/14th_digital_economy.txt</span><span class="fstat"><i class="plus">+132</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/14th_employment.txt</span><span class="fstat"><i class="plus">+193</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/14th_energy_saving.txt</span><span class="fstat"><i class="plus">+80</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/14th_outline.txt</span><span class="fstat"><i class="plus">+672</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/14th_suggestion.txt</span><span class="fstat"><i class="plus">+115</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/15th_employment_priority.txt</span><span class="fstat"><i class="plus">+98</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/15th_energy_system.txt</span><span class="fstat"><i class="plus">+96</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/15th_hr_social_security.txt</span><span class="fstat"><i class="plus">+103</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/data/15th_outline.txt</span><span class="fstat"><i class="plus">+1007</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/manifest.json</span><span class="fstat"><i class="plus">+94</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/advise_09a7a9b9de03.json</span><span class="fstat"><i class="plus">+52</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/advise_69e6d2ff7f66.json</span><span class="fstat"><i class="plus">+52</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/advise_6d1ce40720a4.json</span><span class="fstat"><i class="plus">+52</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/advise_e3eecbbc3c6c.json</span><span class="fstat"><i class="plus">+52</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/interpret_1067feb3bf5a.json</span><span class="fstat"><i class="plus">+136</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/interpret_1384cbcf65de.json</span><span class="fstat"><i class="plus">+143</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/interpret_469627b0e4f1.json</span><span class="fstat"><i class="plus">+122</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/seed/samples/interpret_6e9325b7f1e1.json</span><span class="fstat"><i class="plus">+66</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/kb.py</span><span class="fstat"><i class="plus">+104</i> <i class="minus">−4</i></span></li><li><span class="fname">src/pages/KnowledgeBase.tsx</span><span class="fstat"><i class="plus">+502</i> <i class="minus">−56</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">筑基 · 6 个文件</div><ul><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+59</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−1</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−4</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−12</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+174</i> <i class="minus">−6</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 3 个文件</div><ul><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+71</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v2.2-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+140</i> <i class="minus">−0</i></span></li><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−3</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">献策 · 3 个文件</div><ul><li><span class="fname">backend/app/api/advise.py</span><span class="fstat"><i class="plus">+161</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/advise.py</span><span class="fstat"><i class="plus">+184</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Advise.tsx</span><span class="fstat"><i class="plus">+388</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">释策 · 3 个文件</div><ul><li><span class="fname">backend/app/api/interpret.py</span><span class="fstat"><i class="plus">+203</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/interpret.py</span><span class="fstat"><i class="plus">+490</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Interpret.tsx</span><span class="fstat"><i class="plus">+597</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 2 个文件</div><ul><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+30</i> <i class="minus">−1</i></span></li><li><span class="fname">src/components/RefreshIndicator.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 2 个文件</div><ul><li><span class="fname">src/pages/GuanWei.tsx</span><span class="fstat"><i class="plus">+78</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Sentiment.tsx</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">智枢 · 1 个文件</div><ul><li><span class="fname">backend/app/services/llm.py</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−2</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 1 个文件</div><ul><li><span class="fname">backend/tests/test_search.py</span><span class="fstat"><i class="plus">+45</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 1 个文件</div><ul><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−9</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="固化 v2.0.0 稳定版（补齐典库/察情/预警等模块 + 主题揭示动画） 本版共 1 次提交：新功能 1 项，主要打磨「筑基、成章、观微」。 v2.0.0 稳定版成型 筑基 成章 观微 其他 观澜 典库 文档 智枢 索隐 校验 库址">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v2.0.0</span>
+            <span class="ms-badge">稳定版成型</span>
+          </div>
+          <div class="ms-date">2026 年 7 月 9 日</div>
+        </header>
+        <h3 class="ms-title">固化 v2.0.0 稳定版（补齐典库/察情/预警等模块 + 主题揭示动画）</h3>
+        <p class="ms-summary">本版共 1 次提交：新功能 1 项，主要打磨「筑基、成章、观微」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>56 个文件</span>
+          <span class="stat plus">+6,989</span>
+          <span class="stat minus">−139</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>18</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>8</em></span><span class="chip"><b>观微</b><i>预警、舆情与简报</i><em>7</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>4</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>4</em></span><span class="chip"><b>典库</b><i>本地知识库与资料沉淀</i><em>4</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="feat" data-hay="固化 v2.0.0 稳定版（补齐典库/察情/预警等模块 + 主题揭示动画） feat: 固化 v2.0.0 稳定版（补齐典库/察情/预警等模块 + 主题揭示动画） 筑基 其他 观微 观澜 典库 成章 智枢 索隐 校验 文档 库址 v2.0.0">
+      <details>
+        <summary>
+          <span class="c-type" title="新功能">✨</span>
+          <span class="c-title">固化 v2.0.0 稳定版（补齐典库/察情/预警等模块 + 主题揭示动画）</span>
+          <span class="c-chips"><span class="chip chip-mod">筑基</span><span class="chip chip-mod">观微</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">典库</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">智枢</span><span class="chip chip-mod">索隐</span><span class="chip chip-mod">校验</span><span class="chip chip-mod">文档</span><span class="chip chip-mod">库址</span></span>
+          <span class="c-meta">
+            <span class="c-hash">a7efc7b</span>
+            <span class="c-date">2026-07-09</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：筑基（应用骨架、桌面基座与打包）、观微（预警、舆情与简报）、观澜（热点采集与来源管理）、典库（本地知识库与资料沉淀）、成章（智能写稿与报告导出）、智枢（大模型接入与密钥）、索隐（全文检索与正文抽取）、校验（自动化测试）、文档（手册、规划与日志）、库址（系统设置与偏好）
+            ；变更 <b>56</b> 个文件，
+            <i class="plus">+6,989</i> /
+            <i class="minus">−139</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 18 个文件</div><ul><li><span class="fname">.gitignore</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+72</i> <i class="minus">−1</i></span></li><li><span class="fname">backend/app/logging_conf.py</span><span class="fstat"><i class="plus">+55</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+44</i> <i class="minus">−3</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+57</i> <i class="minus">−1</i></span></li><li><span class="fname">electron/preload.cjs</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+70</i> <i class="minus">−8</i></span></li><li><span class="fname">src/components/DeepResearchModal.tsx</span><span class="fstat"><i class="plus">+214</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Markdown.tsx</span><span class="fstat"><i class="plus">+229</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+13</i> <i class="minus">−3</i></span></li><li><span class="fname">src/components/Skeleton.tsx</span><span class="fstat"><i class="plus">+38</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+332</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/theme.ts</span><span class="fstat"><i class="plus">+52</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/useCountUp.ts</span><span class="fstat"><i class="plus">+24</i> <i class="minus">−0</i></span></li><li><span class="fname">src/store/app.ts</span><span class="fstat"><i class="plus">+11</i> <i class="minus">−3</i></span></li><li><span class="fname">src/styles/globals.css</span><span class="fstat"><i class="plus">+108</i> <i class="minus">−6</i></span></li><li><span class="fname">tailwind.config.js</span><span class="fstat"><i class="plus">+26</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 8 个文件</div><ul><li><span class="fname">backend/app/api/workbench.py</span><span class="fstat"><i class="plus">+164</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/export.py</span><span class="fstat"><i class="plus">+679</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/report_chat.py</span><span class="fstat"><i class="plus">+104</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+75</i> <i class="minus">−9</i></span></li><li><span class="fname">src/components/CitationPanel.tsx</span><span class="fstat"><i class="plus">+97</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/ReportChat.tsx</span><span class="fstat"><i class="plus">+195</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+126</i> <i class="minus">−21</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+165</i> <i class="minus">−47</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观微 · 7 个文件</div><ul><li><span class="fname">backend/app/api/alerts.py</span><span class="fstat"><i class="plus">+90</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/api/sentiment.py</span><span class="fstat"><i class="plus">+25</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/alerts.py</span><span class="fstat"><i class="plus">+228</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/sentiment.py</span><span class="fstat"><i class="plus">+278</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_sentiment.py</span><span class="fstat"><i class="plus">+61</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Alerts.tsx</span><span class="fstat"><i class="plus">+403</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Sentiment.tsx</span><span class="fstat"><i class="plus">+369</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 4 个文件</div><ul><li><span class="fname">&quot;.trae/documents/M4-\345\211\251\344\275\231\345\256\236\347\216\260\350\256\241\345\210\222-P1\346\224\266\345\260\276\344\270\216P2.md&quot;</span><span class="fstat"><i class="plus">+89</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;.trae/documents/M4-\345\212\250\346\225\210\344\270\216\344\272\244\344\272\222\344\274\230\345\214\226\346\226\271\346\241\210.md&quot;</span><span class="fstat"><i class="plus">+46</i> <i class="minus">−0</i></span></li><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−2</i></span></li><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−4</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 4 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+2</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+18</i> <i class="minus">−3</i></span></li><li><span class="fname">backend/app/services/sources/__init__.py</span><span class="fstat"><i class="plus">+4</i> <i class="minus">−2</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+49</i> <i class="minus">−8</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">典库 · 4 个文件</div><ul><li><span class="fname">backend/app/api/kb.py</span><span class="fstat"><i class="plus">+146</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/deep_research.py</span><span class="fstat"><i class="plus">+182</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/kb.py</span><span class="fstat"><i class="plus">+325</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/KnowledgeBase.tsx</span><span class="fstat"><i class="plus">+498</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">文档 · 4 个文件</div><ul><li><span class="fname">&quot;docs/\345\257\274\345\207\272\346\226\271\346\241\210\350\256\276\350\256\241.md&quot;</span><span class="fstat"><i class="plus">+189</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/\345\274\200\345\217\221\346\227\245\345\277\227.md&quot;</span><span class="fstat"><i class="plus">+236</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v0.2-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+149</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;docs/v2.1-\350\277\255\344\273\243\350\247\204\345\210\222.md&quot;</span><span class="fstat"><i class="plus">+88</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">智枢 · 2 个文件</div><ul><li><span class="fname">backend/app/providers.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/llm.py</span><span class="fstat"><i class="plus">+234</i> <i class="minus">−1</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 2 个文件</div><ul><li><span class="fname">backend/app/services/extract.py</span><span class="fstat"><i class="plus">+117</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+99</i> <i class="minus">−12</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">校验 · 2 个文件</div><ul><li><span class="fname">backend/tests/test_export.py</span><span class="fstat"><i class="plus">+37</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/tests/test_kb.py</span><span class="fstat"><i class="plus">+58</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 1 个文件</div><ul><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+7</i> <i class="minus">−3</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="electron-builder 关闭自动发布（--publish never）修复无 gh_token 退出 本版共 1 次提交：工程与流水线调整 1 处，主要打磨「筑基」。 v0.1.1 奠基 筑基">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v0.1.1</span>
+            <span class="ms-badge">奠基</span>
+          </div>
+          <div class="ms-date">2026 年 6 月 18 日</div>
+        </header>
+        <h3 class="ms-title">electron-builder 关闭自动发布（--publish never）修复无 GH_TOKEN 退出</h3>
+        <p class="ms-summary">本版共 1 次提交：工程与流水线调整 1 处，主要打磨「筑基」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>1 次提交</span>
+          <span class="stat"><i>📄</i>1 个文件</span>
+          <span class="stat plus">+3</span>
+          <span class="stat minus">−3</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>1</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="ci" data-hay="electron-builder 关闭自动发布（--publish never）修复无 gh_token 退出 ci: electron-builder 关闭自动发布（--publish never）修复无 gh_token 退出 筑基 v0.1.1">
+      <details>
+        <summary>
+          <span class="c-type" title="流水线">🔧</span>
+          <span class="c-title">electron-builder 关闭自动发布（--publish never）修复无 GH_TOKEN 退出</span>
+          <span class="c-chips"><span class="chip chip-mod">筑基</span></span>
+          <span class="c-meta">
+            <span class="c-hash">22c2ec9</span>
+            <span class="c-date">2026-06-18</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：筑基（应用骨架、桌面基座与打包）
+            ；变更 <b>1</b> 个文件，
+            <i class="plus">+3</i> /
+            <i class="minus">−3</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 1 个文件</div><ul><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+3</i> <i class="minus">−3</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section>
+    <section class="ms" data-hay="添加 readme 与 windows 启动脚本 本版共 2 次提交：文档更新 1 次，主要打磨「筑基、观澜」。 v0.1.0 奠基 筑基 其他 观澜 成章 策府 智枢 库址 文档 流水线 索隐">
+      <div class="ms-node" aria-hidden="true"></div>
+      <div class="ms-card reveal">
+        <header class="ms-head">
+          <div class="ms-id">
+            <span class="ms-tag">v0.1.0</span>
+            <span class="ms-badge">奠基</span>
+          </div>
+          <div class="ms-date">2026 年 6 月 18 日</div>
+        </header>
+        <h3 class="ms-title">添加 README 与 Windows 启动脚本</h3>
+        <p class="ms-summary">本版共 2 次提交：文档更新 1 次，主要打磨「筑基、观澜」。</p>
+        <div class="ms-stats">
+          <span class="stat"><i>📦</i>2 次提交</span>
+          <span class="stat"><i>📄</i>59 个文件</span>
+          <span class="stat plus">+14,138</span>
+          <span class="stat minus">−0</span>
+        </div>
+        <div class="ms-mods"><span class="chip"><b>筑基</b><i>应用骨架、桌面基座与打包</i><em>30</em></span><span class="chip"><b>其他</b><i>零散改动</i><em>7</em></span><span class="chip"><b>观澜</b><i>热点采集与来源管理</i><em>7</em></span><span class="chip"><b>成章</b><i>智能写稿与报告导出</i><em>4</em></span><span class="chip"><b>策府</b><i>模板、技能与新手引导</i><em>3</em></span><span class="chip"><b>智枢</b><i>大模型接入与密钥</i><em>3</em></span></div>
+        <div class="ms-commits">
+    <article class="commit" data-type="docs" data-hay="添加 readme 与 windows 启动脚本 docs: 添加 readme 与 windows 启动脚本 文档 筑基 v0.1.0">
+      <details>
+        <summary>
+          <span class="c-type" title="文档">📝</span>
+          <span class="c-title">添加 README 与 Windows 启动脚本</span>
+          <span class="c-chips"><span class="chip chip-mod">文档</span><span class="chip chip-mod">筑基</span></span>
+          <span class="c-meta">
+            <span class="c-hash">f43817a</span>
+            <span class="c-date">2026-06-18</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：文档（手册、规划与日志）、筑基（应用骨架、桌面基座与打包）
+            ；变更 <b>2</b> 个文件，
+            <i class="plus">+126</i> /
+            <i class="minus">−0</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">文档 · 1 个文件</div><ul><li><span class="fname">README.md</span><span class="fstat"><i class="plus">+92</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">筑基 · 1 个文件</div><ul><li><span class="fname">&quot;installer/\345\220\257\345\212\250-Windows.bat&quot;</span><span class="fstat"><i class="plus">+34</i> <i class="minus">−0</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article>
+    <article class="commit" data-type="other" data-hay="项目首个提交，雏形落地 first commit 流水线 筑基 其他 观澜 策府 库址 成章 智枢 索隐 v0.1.0">
+      <details>
+        <summary>
+          <span class="c-type" title="迭代">•</span>
+          <span class="c-title">项目首个提交，雏形落地</span>
+          <span class="c-chips"><span class="chip chip-mod">流水线</span><span class="chip chip-mod">筑基</span><span class="chip chip-mod">观澜</span><span class="chip chip-mod">策府</span><span class="chip chip-mod">库址</span><span class="chip chip-mod">成章</span><span class="chip chip-mod">智枢</span><span class="chip chip-mod">索隐</span></span>
+          <span class="c-meta">
+            <span class="c-hash">b457db0</span>
+            <span class="c-date">2026-06-18</span>
+          </span>
+        </summary>
+        <div class="c-body">
+          <p class="c-plain">归类：流水线（自动构建与发布）、筑基（应用骨架、桌面基座与打包）、观澜（热点采集与来源管理）、策府（模板、技能与新手引导）、库址（系统设置与偏好）、成章（智能写稿与报告导出）、智枢（大模型接入与密钥）、索隐（全文检索与正文抽取）
+            ；变更 <b>57</b> 个文件，
+            <i class="plus">+14,012</i> /
+            <i class="minus">−0</i> 行。
+            
+          </p>
+          <div class="filegroups"><div class="filegroup"><div class="filegroup-h">筑基 · 29 个文件</div><ul><li><span class="fname">&quot;installer/\344\270\200\351\224\256\345\220\257\345\212\250.command&quot;</span><span class="fstat"><i class="plus">+51</i> <i class="minus">−0</i></span></li><li><span class="fname">&quot;installer/\344\275\277\347\224\250\350\257\264\346\230\216.txt&quot;</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−0</i></span></li><li><span class="fname">.gitignore</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−0</i></span></li><li><span class="fname">.npmrc</span><span class="fstat"><i class="plus">+11</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/db.py</span><span class="fstat"><i class="plus">+128</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/main.py</span><span class="fstat"><i class="plus">+35</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/paths.py</span><span class="fstat"><i class="plus">+66</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/desktop_server.py</span><span class="fstat"><i class="plus">+35</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/requirements.txt</span><span class="fstat"><i class="plus">+9</i> <i class="minus">−0</i></span></li><li><span class="fname">build/icon.ico</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">build/icon.png</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">electron/main.cjs</span><span class="fstat"><i class="plus">+214</i> <i class="minus">−0</i></span></li><li><span class="fname">electron/preload.cjs</span><span class="fstat"><i class="plus">+8</i> <i class="minus">−0</i></span></li><li><span class="fname">index.html</span><span class="fstat"><i class="plus">+12</i> <i class="minus">−0</i></span></li><li><span class="fname">insight-backend.spec</span><span class="fstat"><i class="plus">+47</i> <i class="minus">−0</i></span></li><li><span class="fname">package.json</span><span class="fstat"><i class="plus">+83</i> <i class="minus">−0</i></span></li><li><span class="fname">postcss.config.js</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−0</i></span></li><li><span class="fname">src/App.tsx</span><span class="fstat"><i class="plus">+91</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Sidebar.tsx</span><span class="fstat"><i class="plus">+65</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/Splash.tsx</span><span class="fstat"><i class="plus">+192</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/api.ts</span><span class="fstat"><i class="plus">+207</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/cn.ts</span><span class="fstat"><i class="plus">+6</i> <i class="minus">−0</i></span></li><li><span class="fname">src/lib/theme.ts</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−0</i></span></li><li><span class="fname">src/main.tsx</span><span class="fstat"><i class="plus">+14</i> <i class="minus">−0</i></span></li><li><span class="fname">src/store/app.ts</span><span class="fstat"><i class="plus">+63</i> <i class="minus">−0</i></span></li><li><span class="fname">src/styles/globals.css</span><span class="fstat"><i class="plus">+196</i> <i class="minus">−0</i></span></li><li><span class="fname">tailwind.config.js</span><span class="fstat"><i class="plus">+41</i> <i class="minus">−0</i></span></li><li><span class="fname">tsconfig.json</span><span class="fstat"><i class="plus">+21</i> <i class="minus">−0</i></span></li><li><span class="fname">vite.config.ts</span><span class="fstat"><i class="plus">+22</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">其他 · 7 个文件</div><ul><li><span class="fname">backend/app/__init__.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/api/__init__.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/__init__.py</span><span class="fstat"><i class="plus">+1</i> <i class="minus">−0</i></span></li><li><span class="fname">package-lock.json</span><span class="fstat"><i class="plus">+6437</i> <i class="minus">−0</i></span></li><li><span class="fname">public/logo-banner.png</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">public/logo.png</span><span class="fstat"><i class="plus">+0</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/About.tsx</span><span class="fstat"><i class="plus">+253</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">观澜 · 7 个文件</div><ul><li><span class="fname">backend/app/api/hotspots.py</span><span class="fstat"><i class="plus">+108</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/hotspots.py</span><span class="fstat"><i class="plus">+377</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/sources/__init__.py</span><span class="fstat"><i class="plus">+469</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/RefreshIndicator.tsx</span><span class="fstat"><i class="plus">+181</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/SourceTag.tsx</span><span class="fstat"><i class="plus">+32</i> <i class="minus">−0</i></span></li><li><span class="fname">src/components/WritabilityBadge.tsx</span><span class="fstat"><i class="plus">+27</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/HotspotPool.tsx</span><span class="fstat"><i class="plus">+294</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">成章 · 4 个文件</div><ul><li><span class="fname">backend/app/api/workbench.py</span><span class="fstat"><i class="plus">+111</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/reports.py</span><span class="fstat"><i class="plus">+183</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Reports.tsx</span><span class="fstat"><i class="plus">+159</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Studio.tsx</span><span class="fstat"><i class="plus">+677</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">策府 · 3 个文件</div><ul><li><span class="fname">backend/app/api/library.py</span><span class="fstat"><i class="plus">+93</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/library.py</span><span class="fstat"><i class="plus">+443</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Library.tsx</span><span class="fstat"><i class="plus">+360</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">智枢 · 3 个文件</div><ul><li><span class="fname">backend/app/providers.py</span><span class="fstat"><i class="plus">+100</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/secure_store.py</span><span class="fstat"><i class="plus">+46</i> <i class="minus">−0</i></span></li><li><span class="fname">backend/app/services/llm.py</span><span class="fstat"><i class="plus">+92</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">库址 · 2 个文件</div><ul><li><span class="fname">backend/app/api/settings.py</span><span class="fstat"><i class="plus">+110</i> <i class="minus">−0</i></span></li><li><span class="fname">src/pages/Settings.tsx</span><span class="fstat"><i class="plus">+1282</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">流水线 · 1 个文件</div><ul><li><span class="fname">.github/workflows/build.yml</span><span class="fstat"><i class="plus">+86</i> <i class="minus">−0</i></span></li></ul></div><div class="filegroup"><div class="filegroup-h">索隐 · 1 个文件</div><ul><li><span class="fname">backend/app/services/search.py</span><span class="fstat"><i class="plus">+400</i> <i class="minus">−0</i></span></li></ul></div></div>
+        </div>
+      </details>
+    </article></div>
+      </div>
+    </section></main>
+
+  <section class="ci-section">
+    <h2 class="section-h reveal">自动构建 · 云端流水线</h2>
+    <p class="section-sub reveal">每一个版本标签背后，都有一条自动构建与发布流水线在工作</p>
+    <div class="reveal">
+        <div class="ci-card reveal">
+          <p class="ci-note">每个版本标签都会自动走完以下四步，安装包随后出现在公开发布页：</p>
+          <ul class="ci-steps"><li><span class="ci-step">①</span><span>打版本标签（如 v4.0.0）即自动触发流水线</span></li><li><span class="ci-step">②</span><span>在云端同时构建 Windows 安装包与 macOS 压缩包</span></li><li><span class="ci-step">③</span><span>打包后自动「冒烟测试」：启动后端、核验全国地图数据完整</span></li><li><span class="ci-step">④</span><span>双端产物自动发布到公开发布仓库，源码仓库保持私有</span></li></ul>
+          <p style="margin-top:16px;text-align:center"><a class="btn-primary" href="https://github.com/rucerchui/rendawence-release/releases" target="_blank" rel="noopener">📦 前往下载安装包</a></p>
+        </div></div>
+  </section>
+
+  <footer class="footer">
+    <div class="seal">问 策 纪 年</div>
+    <div>数据来源：Git 提交历史 · GitHub Actions ｜ 全部内容自动生成，无人工修饰</div>
+    <div>人大问策（RDWC）· 中国人民大学 国家治理大数据和人工智能创新平台</div>
+  </footer>
+</div>
+<script>
+// 启用滚动渐动效（渐进增强：此句不执行则 CSS 默认全显，正文永不隐形）
+document.documentElement.classList.add('anim');
+const q = document.getElementById('q');
+const pills = document.querySelectorAll('.pill');
+let activeType = 'all';
+function apply(){
+  const kw = (q.value || '').trim().toLowerCase();
+  document.querySelectorAll('.ms').forEach(ms => {
+    let visible = 0;
+    const msHay = (ms.dataset.hay || '');
+    const rows = ms.querySelectorAll('.commit');
+    rows.forEach(c => {
+      const okType = activeType === 'all' || c.dataset.type === activeType;
+      const okKw = !kw || (c.dataset.hay || '').includes(kw) || msHay.includes(kw);
+      const show = okType && okKw;
+      c.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    // 没有正文提交的节点（如纯快照的“进行中”）在无筛选时保留，筛选时按匹配结果走
+    ms.style.display = (visible || (!rows.length && activeType === 'all' && !kw)) ? '' : 'none';
+  });
+}
+pills.forEach(p => p.addEventListener('click', () => {
+  pills.forEach(x => x.classList.remove('on'));
+  p.classList.add('on');
+  activeType = p.dataset.type;
+  apply();
+}));
+q.addEventListener('input', apply);
+
+// 滚动渐入（系统开启“减少动态效果”时 CSS 已直接全显）
+const reveals = document.querySelectorAll('.reveal');
+// 首屏内的元素立即显形（脚本在页面末尾执行，布局已就绪），不等待观察器回调
+reveals.forEach(el => {
+  const r = el.getBoundingClientRect();
+  if (r.top < window.innerHeight * 1.05) el.classList.add('in');
+});
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => { if (!el.classList.contains('in')) io.observe(el); });
+  // 兜底：2 秒后仍未进入视口判定的（异常环境）一律全显，绝不留白
+  setTimeout(() => reveals.forEach(el => el.classList.add('in')), 2000);
+} else {
+  reveals.forEach(el => el.classList.add('in'));
+}
+</script>
+</body>
+</html>
